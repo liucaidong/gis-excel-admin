@@ -1,116 +1,281 @@
 <template>
-	<div class="home">
-		<el-row>
-			<el-col :span="24">
-				<div class="cs-title">
-					<span>{{title}}</span>
-					<el-button size="medium" type="primary" plain @click="goToDetail">管理数据</el-button>
-					<el-button size="medium" type="primary" plain @click="onShare">分享</el-button>
+	<el-container style="width: 100%; height: 100%;">
+		<el-header>
+			<div class="cs-title">
+				<span>{{reportData.length > 0 ? reportData[0]['pipeName'] : '请先上传Excel'}}</span>
+				<el-button size="medium" type="primary" plain @click="goToDetail">管理数据</el-button>
+				<el-button size="medium" type="primary" plain @click="onShare">分享</el-button>
+			</div>
+		</el-header>
+		<el-container>
+			<el-aside style="width:30%;">
+				<div>
+					<div v-if="isPoint">
+						<h3>检测点详情</h3>
+						<el-form size="mini" label-position="right" label-width="160px" :model="pointForm">
+							<el-form-item size="mini" label="检测点名称">
+								<span>{{pointForm.checkPointName}}</span>
+							</el-form-item>
+							<el-form-item size="mini" label="检测点编号">
+								<span>{{pointForm.checkPointNum}}</span>
+							</el-form-item>
+							<el-form-item size="mini" label="类型">
+								<span>{{pointForm.type}}</span>
+							</el-form-item>
+							<el-form-item size="mini" label="经度L">
+								<span>{{pointForm.lon}}</span>
+							</el-form-item>
+							<el-form-item size="mini" label="纬度B">
+								<span>{{pointForm.lat}}</span>
+							</el-form-item>
+							<el-form-item size="mini" label="备注">
+								<span>{{pointForm.remark}}</span>
+							</el-form-item>
+							<el-form-item size="mini" label="照片">
+								<span>{{pointForm.photo}}</span>
+							</el-form-item>
+						</el-form>
+						<el-carousel :interval="5000" arrow="always">
+							<el-carousel-item v-for="item in photos" :key="item.name">
+								<img :src="item.src" width="100%"></img>
+							</el-carousel-item>
+						</el-carousel>
+					</div>
+					<div v-else>
+						<h3>管线详情</h3>
+						<el-form size="mini" label-position="right" label-width="160px" :model="lineForm">
+							<el-form-item size="mini" label="测量工程名称">
+								<span>{{lineForm.projectName}}</span>
+							</el-form-item>
+							<el-form-item size="mini" label="管线编号">
+								<span>{{lineForm.pipeNum}}</span>
+							</el-form-item>
+							<el-form-item size="mini" label="运行介质">
+								<span>{{lineForm.medium}}</span>
+							</el-form-item>
+							<el-form-item size="mini" label="压力级制">
+								<span>{{lineForm.pressLevel}}</span>
+							</el-form-item>
+							<el-form-item size="mini" label="材质">
+								<span>{{lineForm.material}}</span>
+							</el-form-item>
+							<el-form-item size="mini" label="外径(mm)">
+								<span>{{lineForm.outerDiameter}}</span>
+							</el-form-item>
+							<el-form-item size="mini" label="长度(m)">
+								<span>{{lineForm.length}}</span>
+							</el-form-item>
+						</el-form>
+					</div>
 				</div>
-			</el-col>
-		</el-row>
-		<el-row>
-			<el-col :span="16">
-				<MyMap msg="Welcome to Your Vue.js App" />
-			</el-col>
-			<el-col :span="8">
-				<div v-if="isPoint">
-					<h3>检测点详情</h3>
-					<el-form size="mini" label-position="right" label-width="160px" :model="pointForm">
-						<el-form-item size="mini" label="检测点名称">
-							<span>{{pointForm.name}}</span>
-						</el-form-item>
-						<el-form-item size="mini" label="检测点编号">
-							<span>{{pointForm.num}}</span>
-						</el-form-item>
-						<el-form-item size="mini" label="类型">
-							<span>{{pointForm.type}}</span>
-						</el-form-item>
-						<el-form-item size="mini" label="经度L">
-							<span>{{pointForm.lon}}</span>
-						</el-form-item>
-						<el-form-item size="mini" label="纬度B">
-							<span>{{pointForm.lat}}</span>
-						</el-form-item>
-						<el-form-item size="mini" label="备注">
-							<span>{{pointForm.remark}}</span>
-						</el-form-item>
-						<el-form-item size="mini" label="照片">
-							<span>{{pointForm.photo}}</span>
-						</el-form-item>
-					</el-form>
-					<el-carousel :interval="5000" arrow="always">
-						<el-carousel-item v-for="item in 4" :key="item">
-							<h3>{{ item }}</h3>
-						</el-carousel-item>
-					</el-carousel>
-				</div>
-				<div v-else>
-					<h3>管线详情</h3>
-					<el-form size="mini" label-position="right" label-width="160px" :model="lineForm">
-						<el-form-item size="mini" label="测量工程名称">
-							<span>{{lineForm.name}}</span>
-						</el-form-item>
-						<el-form-item size="mini" label="管线编号">
-							<span>{{lineForm.num}}</span>
-						</el-form-item>
-						<el-form-item size="mini" label="运行介质">
-							<span>{{lineForm.type}}</span>
-						</el-form-item>
-						<el-form-item size="mini" label="压力级制">
-							<span>{{lineForm.lon}}</span>
-						</el-form-item>
-						<el-form-item size="mini" label="材质">
-							<span>{{lineForm.lat}}</span>
-						</el-form-item>
-						<el-form-item size="mini" label="外径(mm)">
-							<span>{{lineForm.remark}}</span>
-						</el-form-item>
-						<el-form-item size="mini" label="长度(m)">
-							<span>{{lineForm.photo}}</span>
-						</el-form-item>
-					</el-form>
-				</div>
-			</el-col>
-		</el-row>
-	</div>
+			</el-aside>
+			<el-main style="width:70%;">
+				<div id="map-box" style="width:100%; height: 100%;"></div>
+			</el-main>
+		</el-container>
+	</el-container>
 </template>
 
 <script>
 // @ is an alias to /src
-import MyMap from "@/components/MyMap.vue";
+
+import AMap from 'AMap'
+import _ from 'lodash'
+import { mapState, mapMutations, mapActions } from 'vuex'
 
 export default {
 	name: "Home",
 	components: {
-		MyMap
 	},
-	created() {},
-	data: function() {
+	async created() {
+		await this.reloadData()
+		this.renderPoint()
+		this.renderLine()
+	},
+	computed: {
+		...mapState([
+			'checkpointData',
+			'reportData',
+			'pipelineData',
+			'segmentData',
+			'multipleSelectedPoint',
+			'multipleSelectedLine',
+			'uploadPhotoData'
+		])
+	},
+	mounted() {
+		this.amapView()
+	},
+	data() {
 		return {
-			title: "请点击管理数据按钮上传表格和图片数据",
+			map: {},
+			photos: [],
 			isPoint: true,
-			pointForm: {
-				name: "aaa",
-				num: "aaa",
-				type: "aaa",
-				lon: "aaa",
-				lat: "aaa",
-				remark: "aaa",
-				photo: "aaa"
+			pointForm: {},
+			lineForm: {},
+			pipelineColor: {
+				"高压A": "#f00",
+				"高压B": "#ff0",
+				"次高压A": "#f0f",
+				"次高压B": "#0f0",
+				"中压A": "#0ff",
+				"中压B": "#00f",
+				"低压": "#999"
 			},
-			lineForm: {
-				name: "aaa",
-				num: "aaa",
-				type: "aaa",
-				lon: "aaa",
-				lat: "aaa",
-				remark: "aaa",
-				photo: "aaa"
+			checkpointIcon: {
+				"阀门":"",
+				"绝缘接头":"",
+				"测试桩":"",
+				"阳极":"",
+				"破损点":"",
+				"泄漏点":"",
+				"异常点":"",
+				"转换接头":"",
+				"占压":"",
+				"生产作业":"",
+				"应急":"",
+				"测点":"",
+				"其他":"",
+				"凝水器":"",
+				"调压箱":"",
+				"调压站":"",
+				"开挖点":"",
+				"接线点":"",
+				"1级":"",
+				"2级":"",
+				"3级":"",
+				"4级":"",
+				"保护":"",
+				"欠保护":""
 			}
 		};
 	},
 	methods: {
+		...mapActions([
+			'getCheckpoint', 
+			'getReport',
+			'getPipeline',
+			'getmultipleSelectedPoint',
+			'getMultipleSelectedLine'
+		]),
+		renderPoint(){
+			let that = this
+			let points = []
+			let hightlightIcon = new AMap.Icon({
+				// 图标尺寸
+				size: new AMap.Size(25, 25),
+				// 图标的取图地址
+				image: '/static/icons/green.PNG',
+				// 图标所用图片大小
+				imageSize: new AMap.Size(25, 25),
+			})
+			let defaultIcon = new AMap.Icon({
+				// 图标尺寸
+				size: new AMap.Size(25, 25),
+				// 图标的取图地址
+				image: '/static/icons/11.PNG',
+				// 图标所用图片大小
+				imageSize: new AMap.Size(25, 25),
+			})
+			_.each(that.checkpointData, function(point, index){
+				let icon = defaultIcon
+				if(_.findIndex(that.multipleSelectedPoint, point) > -1 ){
+					icon = hightlightIcon
+				}
+				let marker = new AMap.Marker({
+					position: new AMap.LngLat(point.lon, point.lat),
+					icon: icon,
+					// offset: new AMap.Pixel(-13, -30),
+					// content: point.checkPointName,
+					title: point.checkPointName,
+					bubble: true,
+					topWhenClick: true,
+					extData: point
+				})
+				marker.on('click', function(e){
+					let p = e.target
+					that.pointForm = p.getExtData()
+					let photoNames = that.pointForm.photo.split("；")
+					let baseUrl = "http://localhost:8080/image/"
+					that.photos = []
+					_.each(photoNames, function(name){
+						let photoObj = {
+							name: name,
+							src: baseUrl + that.uploadPhotoData.reportNum + "/" + name
+						}
+						that.photos.push(photoObj)
+					})
+					p.setIcon(hightlightIcon)
+					that.isPoint = true
+				})
+				points.push(marker)
+			})
+			let overlayGroups = new AMap.OverlayGroup(points)
+			this.map.add(overlayGroups)	 
+		},
+		renderLine(){
+			let that = this
+			let lines = []
+
+			let hightlightColor = '#f00'
+			let defaultColor = '#3366FF'
+			_.each(that.pipelineData, function(pipe, index){
+				let strokeColor = defaultColor
+				if(_.findIndex(that.multipleSelectedLine, pipe) > -1 ){
+					strokeColor = hightlightColor
+				}
+				let pipeline = new AMap.Polyline({
+					path: pipe.pipePaths,
+					cursor: 'pointer',
+					strokeColor: strokeColor,
+					isOutline: true,
+					borderWeight: 4,
+					outlineColor: '#ffeeff',
+					strokeOpacity: 1,
+					strokeWeight: 8,
+					// 折线样式还支持 'dashed'
+					strokeStyle: "solid",
+					// strokeStyle是dashed时有效
+					strokeDasharray: [8, 5],
+					lineJoin: 'round',
+					lineCap: 'round',
+					zIndex: 8,
+					extData: pipe
+				})
+				pipeline.on('click', function(e){
+					let p = e.target
+					that.lineForm = p.getExtData()
+					p.setOptions({strokeColor: hightlightColor})
+					that.isPoint = false
+				})
+				lines.push(pipeline)
+			})
+			let overlayGroups = new AMap.OverlayGroup(lines)
+			this.map.add(overlayGroups)	 
+		},
+		amapView() {
+			this.map = new AMap.Map('map-box', {
+				resizeEnable: true,
+				zoom: 11,
+				center: ['116.537812', '40.02218045'],
+				viewMode: '3D'
+			})
+			// this.map.plugin(['AMap.ToolBar', 'AMap.MapType'], function(){
+			// 	this.map.addControl(new AMap.ToolBar())
+			// 	this.map.addControl(new AMap.MapType({
+			// 		showTraffic: false,
+			// 		showRoad: false
+			// 	}))
+			// })
+
+			this.map.setFitView()
+		},
+		async reloadData(){
+			await this.getCheckpoint()
+			await this.getReport()
+			await this.getPipeline()
+		},
+		// getCheck
 		goToDetail() {
 			this.$router.push({ path: "detail" });
 		},
@@ -137,9 +302,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.home {
+
 	.cs-title {
-		height: 80px;
+		// height: 80px;
 		span {
 			display: inline-block;
 			width: 60%;
@@ -162,5 +327,5 @@ export default {
 	.el-carousel__item:nth-child(2n + 1) {
 		background-color: #d3dce6;
 	}
-}
+
 </style>
