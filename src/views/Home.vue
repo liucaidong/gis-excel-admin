@@ -114,39 +114,39 @@ export default {
 			pointForm: {},
 			lineForm: {},
 			pipelineColor: {
-				"高压A": "#f00",
-				"高压B": "#ff0",
-				"次高压A": "#f0f",
-				"次高压B": "#0f0",
-				"中压A": "#0ff",
-				"中压B": "#00f",
-				"低压": "#999"
+				"高压A": "#E600A9",
+				"高压B": "#000000",
+				"次高压A": "#FF0000",
+				"次高压B": "#FF0000",
+				"中压A": "#0000FF",
+				"中压B": "#0000FF",
+				"低压": "#266400"
 			},
 			checkpointIcon: {
-				"阀门":"",
-				"绝缘接头":"",
-				"测试桩":"",
-				"阳极":"",
-				"破损点":"",
-				"泄漏点":"",
-				"异常点":"",
-				"转换接头":"",
-				"占压":"",
-				"生产作业":"",
-				"应急":"",
-				"测点":"",
-				"其他":"",
-				"凝水器":"",
-				"调压箱":"",
-				"调压站":"",
-				"开挖点":"",
-				"接线点":"",
-				"1级":"",
-				"2级":"",
-				"3级":"",
-				"4级":"",
-				"保护":"",
-				"欠保护":""
+				"阀门":"/static/icons/阀门.PNG",
+				"绝缘接头":"/static/icons/绝缘接头.PNG",
+				"测试桩":"/static/icons/测试桩.PNG",
+				"阳极":"/static/icons/阳极.PNG",
+				"破损点":"/static/icons/破损点.PNG",
+				"泄漏点":"/static/icons/泄漏点.PNG",
+				"异常点":"/static/icons/异常点.PNG",
+				"转换接头":"/static/icons/转换接头.PNG",
+				"占压":"/static/icons/占压.PNG",
+				"生产作业":"/static/icons/生产作业.PNG",
+				"应急":"/static/icons/应急.PNG",
+				"测点":"/static/icons/测点.PNG",
+				"其他":"/static/icons/其他.PNG",
+				"凝水器":"/static/icons/凝水器.PNG",
+				"调压箱":"/static/icons/调压箱.PNG",
+				"调压站":"/static/icons/调压站.PNG",
+				"开挖点":"/static/icons/开挖点.PNG",
+				"接线点":"/static/icons/接线点.PNG",
+				"1级":"/static/icons/1级.PNG",
+				"2级":"/static/icons/2级.PNG",
+				"3级":"/static/icons/3级.PNG",
+				"4级":"/static/icons/4级.PNG",
+				"保护":"/static/icons/保护.PNG",
+				"欠保护":"/static/icons/欠保护.PNG"
 			}
 		};
 	},
@@ -161,26 +161,26 @@ export default {
 		renderPoint(){
 			let that = this
 			let points = []
-			let hightlightIcon = new AMap.Icon({
-				// 图标尺寸
-				size: new AMap.Size(25, 25),
-				// 图标的取图地址
-				image: '/static/icons/green.PNG',
-				// 图标所用图片大小
-				imageSize: new AMap.Size(25, 25),
-			})
-			let defaultIcon = new AMap.Icon({
-				// 图标尺寸
-				size: new AMap.Size(25, 25),
-				// 图标的取图地址
-				image: '/static/icons/11.PNG',
-				// 图标所用图片大小
-				imageSize: new AMap.Size(25, 25),
-			})
+			
 			_.each(that.checkpointData, function(point, index){
-				let icon = defaultIcon
+				let icon = new AMap.Icon({
+					// 图标尺寸
+					size: new AMap.Size(25, 25),
+					// 图标的取图地址
+					image: '/static/icons/' + point.type + '.PNG',
+					// 图标所用图片大小
+					imageSize: new AMap.Size(25, 25),
+				})
+
 				if(_.findIndex(that.multipleSelectedPoint, point) > -1 ){
-					icon = hightlightIcon
+					icon = new AMap.Icon({
+						// 图标尺寸
+						size: new AMap.Size(25, 25),
+						// 图标的取图地址
+						image: '/static/icons/' + point.type + '.PNG',
+						// 图标所用图片大小
+						imageSize: new AMap.Size(25, 25),
+					})
 				}
 				let marker = new AMap.Marker({
 					position: new AMap.LngLat(point.lon, point.lat),
@@ -195,7 +195,7 @@ export default {
 				marker.on('click', function(e){
 					let p = e.target
 					that.pointForm = p.getExtData()
-					let photoNames = that.pointForm.photo.split("；")
+					let photoNames = that.pointForm.photo ? that.pointForm.photo.split("；") : []
 					let baseUrl = "http://localhost:8080/image/"
 					that.photos = []
 					_.each(photoNames, function(name){
@@ -205,7 +205,14 @@ export default {
 						}
 						that.photos.push(photoObj)
 					})
-					p.setIcon(hightlightIcon)
+					p.setIcon(new AMap.Icon({
+						// 图标尺寸
+						size: new AMap.Size(25, 25),
+						// 图标的取图地址
+						image: '/static/icons/' + that.pointForm.type + '.PNG',
+						// 图标所用图片大小
+						imageSize: new AMap.Size(25, 25),
+					}))
 					that.isPoint = true
 				})
 				points.push(marker)
@@ -216,13 +223,11 @@ export default {
 		renderLine(){
 			let that = this
 			let lines = []
-
-			let hightlightColor = '#f00'
-			let defaultColor = '#3366FF'
+			
 			_.each(that.pipelineData, function(pipe, index){
-				let strokeColor = defaultColor
+				let strokeColor = that.pipelineColor[pipe.pressLevel]
 				if(_.findIndex(that.multipleSelectedLine, pipe) > -1 ){
-					strokeColor = hightlightColor
+					strokeColor = that.pipelineColor[pipe.pressLevel]
 				}
 				let pipeline = new AMap.Polyline({
 					path: pipe.pipePaths,
@@ -245,7 +250,7 @@ export default {
 				pipeline.on('click', function(e){
 					let p = e.target
 					that.lineForm = p.getExtData()
-					p.setOptions({strokeColor: hightlightColor})
+					p.setOptions({strokeColor: that.pipelineColor[that.lineForm.pressLevel]})
 					that.isPoint = false
 				})
 				lines.push(pipeline)
