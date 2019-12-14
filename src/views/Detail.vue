@@ -207,6 +207,7 @@
         drag
         name="file"
         action="http://localhost:8080/upload/"
+        :on-success="handleExcelSuccess"
         >
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">将Excel文件拖到此处，或<em>点击上传</em></div>
@@ -246,7 +247,6 @@ export default {
     }
   },
   created() {
-    
   },
   mounted() {
     // this.$refs.checkpointTable.clearSelection()
@@ -275,9 +275,13 @@ export default {
 	},
   methods: {
     ...mapActions([
+		  'reloadAllData',
 			'getmultipleSelectedPoint',
 			'getMultipleSelectedLine'
 		]),
+    handleExcelSuccess(res, file) {
+      this.reloadAllData()
+    },
     beforePhotoUpload(file) {
       if (this.uploadPhotoData.reportNum == "") {
         this.$message.error('请先上传Excel文件!');

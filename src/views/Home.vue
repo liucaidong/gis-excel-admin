@@ -88,7 +88,7 @@ export default {
 	components: {
 	},
 	async created() {
-		await this.reloadData()
+		await this.reloadAllData()
 		this.renderPoint()
 		this.renderLine()
 	},
@@ -152,6 +152,7 @@ export default {
 	},
 	methods: {
 		...mapActions([
+			'reloadAllData',
 			'getCheckpoint', 
 			'getReport',
 			'getPipeline',
@@ -275,12 +276,6 @@ export default {
 
 			this.map.setFitView()
 		},
-		async reloadData(){
-			await this.getCheckpoint()
-			await this.getReport()
-			await this.getPipeline()
-		},
-		// getCheck
 		goToDetail() {
 			this.$router.push({ path: "detail" });
 		},

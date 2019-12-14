@@ -46,6 +46,11 @@ export default new Vuex.Store({
         }
     },
     actions: {
+        async reloadAllData({ dispatch }) {
+            await dispatch('getCheckpoint')
+            await dispatch('getReport')
+            await dispatch('getPipeline')
+        },
         async getCheckpoint({ commit }) {
             await axios.get("checkpoint", {}).then((res) => {
                 var data = res.data
