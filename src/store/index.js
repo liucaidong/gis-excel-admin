@@ -6,7 +6,7 @@ import AMap from 'AMap'
 Vue.use(Vuex)
 
 import axios from "axios"
-axios.defaults.baseURL = 'http://localhost:8080/excel/'
+axios.defaults.baseURL = 'http://localhost:8080'
 axios.defaults.withCredentials = true
 
 
@@ -21,6 +21,16 @@ export default new Vuex.Store({
         uploadPhotoData: {
             reportNum: ""
         },
+        pipelineColor: {
+            "高压A": "#E600A9",
+            "高压B": "#000000",
+            "次高压A": "#FF0000",
+            "次高压B": "#FF0000",
+            "中压A": "#0000FF",
+            "中压B": "#0000FF",
+            "低压": "#266400"
+        },
+
     },
     mutations: {
         setcheckpointData(state, payload) {
@@ -52,20 +62,20 @@ export default new Vuex.Store({
             await dispatch('getPipeline')
         },
         async getCheckpoint({ commit }) {
-            await axios.get("checkpoint", {}).then((res) => {
+            await axios.get("/excel/checkpoint", {}).then((res) => {
                 var data = res.data
                 commit('setcheckpointData', data)
             })
         },
         async getReport({ commit }) {
-            await axios.get("report", {}).then((res) => {
+            await axios.get("/excel/report", {}).then((res) => {
                 var data = res.data
                 commit('setreportData', data)
                 commit('setuploadPhotoData', data[0]["reportNum"])
             })
         },
         async getPipeline({ dispatch, commit, state }) {
-            await axios.get("pipeline", {}).then(async(res) => {
+            await axios.get("/excel/pipeline", {}).then(async(res) => {
                 var data = res.data
                 await dispatch('getSegment')
 
@@ -78,13 +88,14 @@ export default new Vuex.Store({
                         }
                     })
                     pipeline.pipePaths = pipePaths
+                    pipeline.strokeColor = state.pipelineColor[pipeline.pressLevel]
                 })
 
                 commit('setpipelineData', data)
             })
         },
         async getSegment({ commit }) {
-            await axios.get("segment", {}).then((res) => {
+            await axios.get("/excel/segment", {}).then((res) => {
                 var data = res.data
                 commit('setsegmentData', data)
             })

@@ -2,9 +2,12 @@
 	<el-container style="width: 100%; height: 100%;">
 		<el-header>
 			<div class="cs-title">
-				<span>{{reportData.length > 0 ? reportData[0]['pipeName'] : '请先上传Excel'}}</span>
-				<el-button size="medium" type="primary" plain @click="goToDetail">管理数据</el-button>
-				<el-button size="medium" type="primary" plain @click="onShare">分享</el-button>
+				<span style="width: 25%; font-family:隶书; font-weight: bold; text-align: left;">燃气管道数据展示分析</span>
+				<span style="width: 46%;">{{reportData.length > 0 ? reportData[0]['pipeName'] : '请先上传Excel'}}</span>
+				<span style="width: 25%;">
+					<el-button size="medium" type="primary" plain @click="goToDetail">管理数据</el-button>
+					<el-button size="medium" type="primary" plain @click="onShare">分享</el-button>
+				</span>
 			</div>
 		</el-header>
 		<el-container>
@@ -108,46 +111,12 @@ export default {
 	},
 	data() {
 		return {
+			highlightMarker: null,
 			map: {},
 			photos: [],
 			isPoint: true,
 			pointForm: {},
-			lineForm: {},
-			pipelineColor: {
-				"高压A": "#E600A9",
-				"高压B": "#000000",
-				"次高压A": "#FF0000",
-				"次高压B": "#FF0000",
-				"中压A": "#0000FF",
-				"中压B": "#0000FF",
-				"低压": "#266400"
-			},
-			checkpointIcon: {
-				"阀门":"/static/icons/阀门.PNG",
-				"绝缘接头":"/static/icons/绝缘接头.PNG",
-				"测试桩":"/static/icons/测试桩.PNG",
-				"阳极":"/static/icons/阳极.PNG",
-				"破损点":"/static/icons/破损点.PNG",
-				"泄漏点":"/static/icons/泄漏点.PNG",
-				"异常点":"/static/icons/异常点.PNG",
-				"转换接头":"/static/icons/转换接头.PNG",
-				"占压":"/static/icons/占压.PNG",
-				"生产作业":"/static/icons/生产作业.PNG",
-				"应急":"/static/icons/应急.PNG",
-				"测点":"/static/icons/测点.PNG",
-				"其他":"/static/icons/其他.PNG",
-				"凝水器":"/static/icons/凝水器.PNG",
-				"调压箱":"/static/icons/调压箱.PNG",
-				"调压站":"/static/icons/调压站.PNG",
-				"开挖点":"/static/icons/开挖点.PNG",
-				"接线点":"/static/icons/接线点.PNG",
-				"1级":"/static/icons/1级.PNG",
-				"2级":"/static/icons/2级.PNG",
-				"3级":"/static/icons/3级.PNG",
-				"4级":"/static/icons/4级.PNG",
-				"保护":"/static/icons/保护.PNG",
-				"欠保护":"/static/icons/欠保护.PNG"
-			}
+			lineForm: {}
 		};
 	},
 	methods: {
@@ -165,39 +134,34 @@ export default {
 			
 			_.each(that.checkpointData, function(point, index){
 				let icon = new AMap.Icon({
-					// 图标尺寸
-					size: new AMap.Size(25, 25),
-					// 图标的取图地址
+					size: new AMap.Size(30, 30),
 					image: '/static/icons/' + point.type + '.PNG',
-					// 图标所用图片大小
-					imageSize: new AMap.Size(25, 25),
+					imageSize: new AMap.Size(30, 30),
 				})
 
 				if(_.findIndex(that.multipleSelectedPoint, point) > -1 ){
 					icon = new AMap.Icon({
-						// 图标尺寸
-						size: new AMap.Size(25, 25),
-						// 图标的取图地址
-						image: '/static/icons/' + point.type + '.PNG',
-						// 图标所用图片大小
-						imageSize: new AMap.Size(25, 25),
+						size: new AMap.Size(30, 30),
+						image: '/static/icons/red.png',
+						imageSize: new AMap.Size(30, 30),
 					})
 				}
 				let marker = new AMap.Marker({
+					// anchor: 'bottom-center',
 					position: new AMap.LngLat(point.lon, point.lat),
 					icon: icon,
 					// offset: new AMap.Pixel(-13, -30),
-					// content: point.checkPointName,
 					title: point.checkPointName,
 					bubble: true,
 					topWhenClick: true,
 					extData: point
 				})
 				marker.on('click', function(e){
+
 					let p = e.target
 					that.pointForm = p.getExtData()
 					let photoNames = that.pointForm.photo ? that.pointForm.photo.split("；") : []
-					let baseUrl = "http://localhost:8080/image/"
+					let baseUrl = "/image/"
 					that.photos = []
 					_.each(photoNames, function(name){
 						let photoObj = {
@@ -206,13 +170,37 @@ export default {
 						}
 						that.photos.push(photoObj)
 					})
+
+					if(that.highlightMarker){
+						let extData = that.highlightMarker.getExtData()
+						that.highlightMarker.setIcon(new AMap.Icon({
+							size: new AMap.Size(30, 30),
+							image: '/static/icons/' + extData.type + '.png',
+							imageSize: new AMap.Size(30, 30),
+						}))
+					}
+					that.highlightMarker = p
+
+					if(that.multipleSelectedPoint.length > 0){
+						let pointOverlays = that.map.getAllOverlays('marker')
+						_.each(pointOverlays, function(pointOverlay){
+							let extData = pointOverlay.getExtData()
+							pointOverlay.setIcon(new AMap.Icon({
+								size: new AMap.Size(30, 30),
+								image: '/static/icons/' + extData.type + '.png',
+								imageSize: new AMap.Size(30, 30),
+							}))
+						})
+						that.getmultipleSelectedPoint([])
+					}
+
 					p.setIcon(new AMap.Icon({
 						// 图标尺寸
-						size: new AMap.Size(25, 25),
+						size: new AMap.Size(30, 30),
 						// 图标的取图地址
-						image: '/static/icons/' + that.pointForm.type + '.PNG',
+						image: '/static/icons/red.png',
 						// 图标所用图片大小
-						imageSize: new AMap.Size(25, 25),
+						imageSize: new AMap.Size(30, 30),
 					}))
 					that.isPoint = true
 				})
@@ -226,9 +214,9 @@ export default {
 			let lines = []
 			
 			_.each(that.pipelineData, function(pipe, index){
-				let strokeColor = that.pipelineColor[pipe.pressLevel]
+				let strokeColor = pipe.strokeColor
 				if(_.findIndex(that.multipleSelectedLine, pipe) > -1 ){
-					strokeColor = that.pipelineColor[pipe.pressLevel]
+					strokeColor = "#FFC000"
 				}
 				let pipeline = new AMap.Polyline({
 					path: pipe.pipePaths,
@@ -249,9 +237,14 @@ export default {
 					extData: pipe
 				})
 				pipeline.on('click', function(e){
+					let pipeOverlays = that.map.getAllOverlays('polyline')
 					let p = e.target
 					that.lineForm = p.getExtData()
-					p.setOptions({strokeColor: that.pipelineColor[that.lineForm.pressLevel]})
+					_.each(pipeOverlays, function(pipeOverlay){
+						let extData = pipeOverlay.getExtData()
+						pipeOverlay.setOptions({strokeColor: extData.strokeColor})
+					})
+					p.setOptions({strokeColor: "#FFC000"})
 					that.isPoint = false
 				})
 				lines.push(pipeline)
@@ -260,21 +253,22 @@ export default {
 			this.map.add(overlayGroups)	 
 		},
 		amapView() {
-			this.map = new AMap.Map('map-box', {
+			let that = this
+			that.map = new AMap.Map('map-box', {
 				resizeEnable: true,
 				zoom: 11,
 				center: ['116.537812', '40.02218045'],
 				viewMode: '3D'
 			})
-			// this.map.plugin(['AMap.ToolBar', 'AMap.MapType'], function(){
-			// 	this.map.addControl(new AMap.ToolBar())
-			// 	this.map.addControl(new AMap.MapType({
-			// 		showTraffic: false,
-			// 		showRoad: false
-			// 	}))
-			// })
+			that.map.plugin(['AMap.ToolBar', 'AMap.MapType'], function(){
+				that.map.addControl(new AMap.ToolBar())
+				that.map.addControl(new AMap.MapType({
+					showTraffic: false,
+					showRoad: false
+				}))
+			})
 
-			this.map.setFitView()
+			that.map.setFitView()
 		},
 		goToDetail() {
 			this.$router.push({ path: "detail" });
@@ -304,12 +298,13 @@ export default {
 <style scoped lang="scss">
 
 	.cs-title {
-		// height: 80px;
+		height: 60px;
+		line-height: 60px;
+		text-align: left;
 		span {
 			display: inline-block;
-			width: 60%;
 			font-size: 28px;
-			font-weight: bold;
+			text-align: center;
 		}
 	}
 	.el-carousel__item h3 {

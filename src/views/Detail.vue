@@ -1,7 +1,10 @@
 <template>
   <div style="width: 100%; height: 100%;">
-    <el-row>
-      <el-col :span="24">
+    <el-row style="height: 60px; line-height: 60px;">
+      <el-col :span="8" style="text-align: left; font-family:隶书; font-size: 28px; font-weight: bold;">
+        燃气管道数据展示分析
+      </el-col>
+      <el-col :span="16">
         <el-button size="medium" type="primary" plain @click="dialogTableVisible = true">上传数据表</el-button>
         <el-button size="medium" type="primary" plain @click="dialogPhotoVisible = true">上传照片</el-button>
         <el-button size="medium" type="primary" plain @click="goToHome">返回首页</el-button>
@@ -206,7 +209,7 @@
       <el-upload
         drag
         name="file"
-        action="http://localhost:8080/upload/"
+        action="/upload/"
         :on-success="handleExcelSuccess"
         >
         <i class="el-icon-upload"></i>
@@ -218,7 +221,7 @@
     <el-dialog title="上传照片" :visible.sync="dialogPhotoVisible">
       <el-upload
         drag
-        action="http://localhost:8080/fileUpload/"
+        action="/fileUpload/"
         multiple
         :data="uploadPhotoData"
         name="files"
