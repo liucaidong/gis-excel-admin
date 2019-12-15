@@ -135,7 +135,7 @@ export default {
 			_.each(that.checkpointData, function(point, index){
 				let icon = new AMap.Icon({
 					size: new AMap.Size(30, 30),
-					image: '/static/icons/' + point.type + '.PNG',
+					image: '/static/icons/' + point.type + '.png',
 					imageSize: new AMap.Size(30, 30),
 				})
 
