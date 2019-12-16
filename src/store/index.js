@@ -5,13 +5,15 @@ import AMap from 'AMap'
 
 Vue.use(Vuex)
 
-import axios from "axios"
-// axios.defaults.baseURL = 'http://localhost:8080'
-axios.defaults.withCredentials = true
+import backendUrl from '../config'
 
+import axios from "axios"
+axios.defaults.baseURL = backendUrl
+axios.defaults.withCredentials = true
 
 export default new Vuex.Store({
     state: {
+        isFirstLogin: true,
         checkpointData: [],
         reportData: [],
         pipelineData: [],
@@ -33,6 +35,9 @@ export default new Vuex.Store({
 
     },
     mutations: {
+        setIsFirstLogin(state, payload) {
+            state.isFirstLogin = payload
+        },
         setcheckpointData(state, payload) {
             state.checkpointData = payload
         },
@@ -71,7 +76,7 @@ export default new Vuex.Store({
             await axios.get("/excel/report", {}).then((res) => {
                 var data = res.data
                 commit('setreportData', data)
-                commit('setuploadPhotoData', data[0]["reportNum"])
+                commit('setuploadPhotoData', !data[0] ? "" : ["reportNum"])
             })
         },
         async getPipeline({ dispatch, commit, state }) {

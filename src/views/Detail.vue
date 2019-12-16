@@ -1,7 +1,7 @@
 <template>
   <div style="width: 100%; height: 100%;">
     <el-row style="height: 60px; line-height: 60px;">
-      <el-col :span="8" style="text-align: left; font-family:隶书; font-size: 28px; font-weight: bold;">
+      <el-col :span="8" style=" color: #888888; text-align: left; font-family:隶书; font-size: 28px; font-weight: bold;">
         燃气管道数据展示分析
       </el-col>
       <el-col :span="16">
@@ -209,7 +209,7 @@
       <el-upload
         drag
         name="file"
-        action="/upload/"
+        :action="excelUploadUrl"
         :on-success="handleExcelSuccess"
         >
         <i class="el-icon-upload"></i>
@@ -221,7 +221,7 @@
     <el-dialog title="上传照片" :visible.sync="dialogPhotoVisible">
       <el-upload
         drag
-        action="/fileUpload/"
+        :action="photoUploadUrl"
         multiple
         :data="uploadPhotoData"
         name="files"
@@ -237,12 +237,17 @@
 
 <script>
 
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, mapMutations } from 'vuex'
+import _ from 'lodash'
+
+import backendUrl from '../config'
 
 export default {
   name: 'Detail',
   data: function(){
     return {
+      excelUploadUrl: backendUrl + '/upload/',
+      photoUploadUrl: backendUrl + '/fileUpload/',
       dialogTableVisible: false,
       dialogPhotoVisible: false,
       activeName: 'first',
@@ -252,21 +257,42 @@ export default {
   created() {
   },
   mounted() {
-    // this.$refs.checkpointTable.clearSelection()
-    // this.$refs.pipelineTable.clearSelection()
-    // if (this.multipleSelectedPoint.length > 0) {
-    //   this.multipleSelectedPoint.forEach(row => {
-    //     this.$refs.checkpointTable.toggleRowSelection(row, true)
-    //   })
-    // }
-    // if (this.multipleSelectedLine.length > 0) {
-    //   this.multipleSelectedLine.forEach(row => {
-    //     this.$refs.pipelineTable.toggleRowSelection(row, true)
-    //   })
-    // }
+    this.$nextTick(() => {
+      let pointIds = _.map(this.multipleSelectedPoint, "id")
+      let lineIds = _.map(this.multipleSelectedLine, "id")
+      let pointTableData = this.$refs.checkpointTable.data
+      let lineTableData = this.$refs.pipelineTable.data
+
+      if(this.isFirstLogin){
+        pointIds = _.map(pointTableData, "id")
+        lineIds = _.map(lineTableData, "id")
+        this.setIsFirstLogin(false)
+      }
+
+      if (pointTableData.length > 0) {
+        pointTableData.forEach(row => {
+          if(_.indexOf(pointIds, row.id) > -1){
+            this.$refs.checkpointTable.toggleRowSelection(row, true)
+          }
+        })
+      }else {
+        this.$refs.checkpointTable.clearSelection()
+      }
+
+      if (lineTableData.length > 0) {
+        lineTableData.forEach(row => {
+          if(_.indexOf(lineIds, row.id) > -1){
+            this.$refs.pipelineTable.toggleRowSelection(row, true)
+          }
+        })
+      }else {
+        this.$refs.pipelineTable.clearSelection()
+      }
+    })
   },
 	computed: {
 		...mapState([
+      'isFirstLogin',
 			'checkpointData',
 			'reportData',
 			'pipelineData',
@@ -277,6 +303,9 @@ export default {
 		])
 	},
   methods: {
+    ...mapMutations([
+      'setIsFirstLogin'
+    ]),
     ...mapActions([
 		  'reloadAllData',
 			'getmultipleSelectedPoint',

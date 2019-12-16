@@ -2,7 +2,7 @@
 	<el-container style="width: 100%; height: 100%;">
 		<el-header>
 			<div class="cs-title">
-				<span style="width: 25%; font-family:隶书; font-weight: bold; text-align: left;">燃气管道数据展示分析</span>
+				<span style="width: 25%; color: #888888; font-family:隶书; font-weight: bold; text-align: left;">燃气管道数据展示分析</span>
 				<span style="width: 46%;">{{reportData.length > 0 ? reportData[0]['pipeName'] : '请先上传Excel'}}</span>
 				<span style="width: 25%;">
 					<el-button size="medium" type="primary" plain @click="goToDetail">管理数据</el-button>
@@ -11,7 +11,7 @@
 			</div>
 		</el-header>
 		<el-container>
-			<el-aside style="width:30%;">
+			<el-aside style="width:25%;">
 				<div>
 					<div v-if="isPoint">
 						<h3>检测点详情</h3>
@@ -90,13 +90,11 @@ export default {
 	name: "Home",
 	components: {
 	},
-	async created() {
-		await this.reloadAllData()
-		this.renderPoint()
-		this.renderLine()
+	created() {
 	},
 	computed: {
 		...mapState([
+      'isFirstLogin',
 			'checkpointData',
 			'reportData',
 			'pipelineData',
@@ -106,12 +104,14 @@ export default {
 			'uploadPhotoData'
 		])
 	},
-	mounted() {
+	async mounted() {
 		this.amapView()
+		await this.reloadAllData()
+		this.renderPoint()
+		this.renderLine()
 	},
 	data() {
 		return {
-			highlightMarker: null,
 			map: {},
 			photos: [],
 			isPoint: true,
@@ -120,6 +120,9 @@ export default {
 		};
 	},
 	methods: {
+    ...mapMutations([
+      'setIsFirstLogin'
+    ]),
 		...mapActions([
 			'reloadAllData',
 			'getCheckpoint', 
@@ -131,38 +134,38 @@ export default {
 		renderPoint(){
 			let that = this
 			let points = []
+
+			let selectedPoints = that.multipleSelectedPoint
+
+			if(that.isFirstLogin){
+				selectedPoints = that.checkpointData
+      }
 			
-			_.each(that.checkpointData, function(point, index){
+			_.each(selectedPoints, function(point, index){
 				let icon = new AMap.Icon({
-					size: new AMap.Size(30, 30),
+					size: new AMap.Size(25, 25),
 					image: '/static/icons/' + point.type + '.png',
-					imageSize: new AMap.Size(30, 30),
+					imageSize: new AMap.Size(25, 25),
 				})
 
-				if(_.findIndex(that.multipleSelectedPoint, point) > -1 ){
-					icon = new AMap.Icon({
-						size: new AMap.Size(30, 30),
-						image: '/static/icons/red.png',
-						imageSize: new AMap.Size(30, 30),
-					})
-				}
 				let marker = new AMap.Marker({
 					// anchor: 'bottom-center',
 					position: new AMap.LngLat(point.lon, point.lat),
 					icon: icon,
-					// offset: new AMap.Pixel(-13, -30),
+					// offset: new AMap.Pixel(-13, -25),
 					title: point.checkPointName,
 					bubble: true,
 					topWhenClick: true,
 					extData: point
 				})
 				marker.on('click', function(e){
-
 					let p = e.target
 					that.pointForm = p.getExtData()
 					let photoNames = that.pointForm.photo ? that.pointForm.photo.split("；") : []
 					let baseUrl = "/image/"
 					that.photos = []
+					that.uploadPhotoData = that.uploadPhotoData || {}
+					
 					_.each(photoNames, function(name){
 						let photoObj = {
 							name: name,
@@ -171,37 +174,6 @@ export default {
 						that.photos.push(photoObj)
 					})
 
-					if(that.highlightMarker){
-						let extData = that.highlightMarker.getExtData()
-						that.highlightMarker.setIcon(new AMap.Icon({
-							size: new AMap.Size(30, 30),
-							image: '/static/icons/' + extData.type + '.png',
-							imageSize: new AMap.Size(30, 30),
-						}))
-					}
-					that.highlightMarker = p
-
-					if(that.multipleSelectedPoint.length > 0){
-						let pointOverlays = that.map.getAllOverlays('marker')
-						_.each(pointOverlays, function(pointOverlay){
-							let extData = pointOverlay.getExtData()
-							pointOverlay.setIcon(new AMap.Icon({
-								size: new AMap.Size(30, 30),
-								image: '/static/icons/' + extData.type + '.png',
-								imageSize: new AMap.Size(30, 30),
-							}))
-						})
-						that.getmultipleSelectedPoint([])
-					}
-
-					p.setIcon(new AMap.Icon({
-						// 图标尺寸
-						size: new AMap.Size(30, 30),
-						// 图标的取图地址
-						image: '/static/icons/red.png',
-						// 图标所用图片大小
-						imageSize: new AMap.Size(30, 30),
-					}))
 					that.isPoint = true
 				})
 				points.push(marker)
@@ -214,37 +186,34 @@ export default {
 			let lines = []
 			
 			_.each(that.pipelineData, function(pipe, index){
-				let strokeColor = pipe.strokeColor
+				let strokeStyle = "dashed"
 				if(_.findIndex(that.multipleSelectedLine, pipe) > -1 ){
-					strokeColor = "#FFC000"
+					strokeStyle = "solid"
+				}
+				if(that.isFirstLogin){
+					strokeStyle = "solid"
 				}
 				let pipeline = new AMap.Polyline({
 					path: pipe.pipePaths,
 					cursor: 'pointer',
-					strokeColor: strokeColor,
-					isOutline: true,
-					borderWeight: 4,
+					strokeColor: pipe.strokeColor,
+					// isOutline: true,
+					// borderWeight: 1,
 					outlineColor: '#ffeeff',
 					strokeOpacity: 1,
-					strokeWeight: 8,
+					strokeWeight: 4,
 					// 折线样式还支持 'dashed'
-					strokeStyle: "solid",
+					strokeStyle: strokeStyle,
 					// strokeStyle是dashed时有效
-					strokeDasharray: [8, 5],
-					lineJoin: 'round',
-					lineCap: 'round',
+					strokeDasharray: [6, 4],
+					// lineJoin: 'round',
+					// lineCap: 'round',
 					zIndex: 8,
 					extData: pipe
 				})
 				pipeline.on('click', function(e){
-					let pipeOverlays = that.map.getAllOverlays('polyline')
 					let p = e.target
 					that.lineForm = p.getExtData()
-					_.each(pipeOverlays, function(pipeOverlay){
-						let extData = pipeOverlay.getExtData()
-						pipeOverlay.setOptions({strokeColor: extData.strokeColor})
-					})
-					p.setOptions({strokeColor: "#FFC000"})
 					that.isPoint = false
 				})
 				lines.push(pipeline)
@@ -267,6 +236,8 @@ export default {
 					showRoad: false
 				}))
 			})
+
+			that.map.clearMap()
 
 			that.map.setFitView()
 		},
