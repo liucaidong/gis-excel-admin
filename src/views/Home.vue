@@ -2,7 +2,9 @@
 	<el-container style="width: 100%; height: 100%;">
 		<el-header>
 			<div class="cs-title">
-				<span style="width: 25%; color: #888888; font-family:隶书; font-weight: bold; text-align: left;">燃气管道数据展示分析</span>
+				<span style="width: 25%;">
+					<img src="/static/images/banner.png" style="width: 100%; height: 100%;" alt="">
+				</span>
 				<span style="width: 46%;">{{reportData.length > 0 ? reportData[0]['pipeName'] : '请先上传Excel'}}</span>
 				<span style="width: 25%;">
 					<el-button size="medium" type="primary" plain @click="goToDetail">管理数据</el-button>
@@ -11,6 +13,9 @@
 			</div>
 		</el-header>
 		<el-container>
+			<el-main style="width:70%;">
+				<div id="map-box" style="width:100%; height: 100%;"></div>
+			</el-main>
 			<el-aside style="width:25%;">
 				<div>
 					<div v-if="isPoint">
@@ -40,7 +45,7 @@
 						</el-form>
 						<el-carousel :interval="5000" arrow="always">
 							<el-carousel-item v-for="item in photos" :key="item.name">
-								<img :src="item.src" width="100%"></img>
+								<img :src="item.src" width="100%" />
 							</el-carousel-item>
 						</el-carousel>
 					</div>
@@ -72,9 +77,6 @@
 					</div>
 				</div>
 			</el-aside>
-			<el-main style="width:70%;">
-				<div id="map-box" style="width:100%; height: 100%;"></div>
-			</el-main>
 		</el-container>
 	</el-container>
 </template>
@@ -186,12 +188,12 @@ export default {
 			let lines = []
 			
 			_.each(that.pipelineData, function(pipe, index){
-				let strokeStyle = "dashed"
+				let strokeWeight = 2
 				if(_.findIndex(that.multipleSelectedLine, pipe) > -1 ){
-					strokeStyle = "solid"
+					strokeWeight = 3
 				}
 				if(that.isFirstLogin){
-					strokeStyle = "solid"
+					strokeWeight = 3
 				}
 				let pipeline = new AMap.Polyline({
 					path: pipe.pipePaths,
@@ -201,11 +203,11 @@ export default {
 					// borderWeight: 1,
 					outlineColor: '#ffeeff',
 					strokeOpacity: 1,
-					strokeWeight: 4,
+					strokeWeight: strokeWeight,
 					// 折线样式还支持 'dashed'
-					strokeStyle: strokeStyle,
+					strokeStyle: 'solid',
 					// strokeStyle是dashed时有效
-					strokeDasharray: [6, 4],
+					// strokeDasharray: [6, 4],
 					// lineJoin: 'round',
 					// lineCap: 'round',
 					zIndex: 8,
@@ -231,10 +233,6 @@ export default {
 			})
 			that.map.plugin(['AMap.ToolBar', 'AMap.MapType'], function(){
 				that.map.addControl(new AMap.ToolBar())
-				that.map.addControl(new AMap.MapType({
-					showTraffic: false,
-					showRoad: false
-				}))
 			})
 
 			that.map.clearMap()
