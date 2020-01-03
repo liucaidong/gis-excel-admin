@@ -1,116 +1,106 @@
 <template>
-	<el-container style="width: 100%; height: 100%;">
-		<el-header>
-			<div class="cs-title">
-				<span style="width: 25%;">
-					<img src="/static/images/banner.png" style="width: 100%; height: 100%;" alt="">
-				</span>
-				<span style="width: 46%;">{{reportData.length > 0 ? reportData[0]['pipeName'] : '请先上传Excel'}}</span>
-				<span style="width: 25%;">
-					<el-button size="medium" type="primary" plain @click="goToDetail">管理数据</el-button>
-					<el-button size="medium" type="primary" plain @click="onShare">分享</el-button>
-				</span>
+	<div class="cs-home-box" style="width:100%; height: 100%;">
+		<div id="map-box" style="width:100%; height: 100%;position:relative;"></div>
+		<!-- float title -->
+		<img class="cs-title" src="/static/images/banner.png" />
+		<!-- float panel -->
+		<div class="cs-panel">
+			<div class="cs-panel-title">
+				{{reportData.length > 0 ? reportData[0]['pipeName'] : '请先上传Excel'}}
 			</div>
-		</el-header>
-		<el-container>
-			<el-main style="width:70%;">
-				<div id="map-box" style="width:100%; height: 100%;"></div>
-			</el-main>
-			<el-aside style="width:25%;">
-				<div>
-					<div v-if="isPoint">
-						<h3>检测点详情</h3>
-						<el-form size="mini" label-position="right" label-width="160px" :model="pointForm">
-							<el-form-item size="mini" label="检测点名称">
-								<span>{{pointForm.checkPointName}}</span>
-							</el-form-item>
-							<el-form-item size="mini" label="检测点编号">
-								<span>{{pointForm.checkPointNum}}</span>
-							</el-form-item>
-							<el-form-item size="mini" label="类型">
-								<span>{{pointForm.type}}</span>
-							</el-form-item>
-							<el-form-item size="mini" label="经度L">
-								<span>{{pointForm.lon}}</span>
-							</el-form-item>
-							<el-form-item size="mini" label="纬度B">
-								<span>{{pointForm.lat}}</span>
-							</el-form-item>
-							<el-form-item size="mini" label="备注">
-								<span>{{pointForm.remark}}</span>
-							</el-form-item>
-							<el-form-item size="mini" label="照片">
-								<span>{{pointForm.photo}}</span>
-							</el-form-item>
-						</el-form>
-						<el-carousel :interval="5000" arrow="always">
-							<el-carousel-item v-for="item in photos" :key="item.name">
-								<img :src="item.src" width="100%" />
-							</el-carousel-item>
-						</el-carousel>
-					</div>
-					<div v-else>
-						<h3>管线详情</h3>
-						<el-form size="mini" label-position="right" label-width="160px" :model="lineForm">
-							<el-form-item size="mini" label="测量工程名称">
-								<span>{{lineForm.projectName}}</span>
-							</el-form-item>
-							<el-form-item size="mini" label="管线编号">
-								<span>{{lineForm.pipeNum}}</span>
-							</el-form-item>
-							<el-form-item size="mini" label="运行介质">
-								<span>{{lineForm.medium}}</span>
-							</el-form-item>
-							<el-form-item size="mini" label="压力级制">
-								<span>{{lineForm.pressLevel}}</span>
-							</el-form-item>
-							<el-form-item size="mini" label="材质">
-								<span>{{lineForm.material}}</span>
-							</el-form-item>
-							<el-form-item size="mini" label="外径(mm)">
-								<span>{{lineForm.outerDiameter}}</span>
-							</el-form-item>
-							<el-form-item size="mini" label="长度(m)">
-								<span>{{lineForm.length}}</span>
-							</el-form-item>
-						</el-form>
-					</div>
-				</div>
-			</el-aside>
-		</el-container>
-	</el-container>
+			<div class="cs-panel-btn">
+				<el-button size="medium" type="primary" plain @click="goToDetail">管理数据</el-button>
+				<el-button size="medium" type="primary" plain @click="onShare">分享</el-button>
+			</div>
+			<div v-if="isPoint">
+				<h3 class="cs-info-h3">检测点详情</h3>
+				<el-form size="mini" label-position="right" label-width="160px" :model="pointForm">
+					<el-form-item size="mini" label="检测点名称">
+						<span>{{pointForm.checkPointName}}</span>
+					</el-form-item>
+					<el-form-item size="mini" label="检测点编号">
+						<span>{{pointForm.checkPointNum}}</span>
+					</el-form-item>
+					<el-form-item size="mini" label="类型">
+						<span>{{pointForm.type}}</span>
+					</el-form-item>
+					<el-form-item size="mini" label="经度L">
+						<span>{{pointForm.lon}}</span>
+					</el-form-item>
+					<el-form-item size="mini" label="纬度B">
+						<span>{{pointForm.lat}}</span>
+					</el-form-item>
+					<el-form-item size="mini" label="备注">
+						<span>{{pointForm.remark}}</span>
+					</el-form-item>
+					<el-form-item size="mini" label="照片">
+						<span>{{pointForm.photo}}</span>
+					</el-form-item>
+				</el-form>
+				<el-carousel :interval="5000" arrow="always">
+					<el-carousel-item v-for="item in photos" :key="item.name">
+						<img :src="item.src" width="100%" />
+					</el-carousel-item>
+				</el-carousel>
+			</div>
+			<div v-else>
+				<h3 class="cs-info-h3">管线详情</h3>
+				<el-form size="mini" label-position="right" label-width="160px" :model="lineForm">
+					<el-form-item size="mini" label="测量工程名称">
+						<span>{{lineForm.projectName}}</span>
+					</el-form-item>
+					<el-form-item size="mini" label="管线编号">
+						<span>{{lineForm.pipeNum}}</span>
+					</el-form-item>
+					<el-form-item size="mini" label="运行介质">
+						<span>{{lineForm.medium}}</span>
+					</el-form-item>
+					<el-form-item size="mini" label="压力级制">
+						<span>{{lineForm.pressLevel}}</span>
+					</el-form-item>
+					<el-form-item size="mini" label="材质">
+						<span>{{lineForm.material}}</span>
+					</el-form-item>
+					<el-form-item size="mini" label="外径(mm)">
+						<span>{{lineForm.outerDiameter}}</span>
+					</el-form-item>
+					<el-form-item size="mini" label="长度(m)">
+						<span>{{lineForm.length}}</span>
+					</el-form-item>
+				</el-form>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>
 // @ is an alias to /src
 
-import AMap from 'AMap'
-import _ from 'lodash'
-import { mapState, mapMutations, mapActions } from 'vuex'
+import AMap from "AMap";
+import _ from "lodash";
+import { mapState, mapMutations, mapActions } from "vuex";
 
 export default {
 	name: "Home",
-	components: {
-	},
-	created() {
-	},
+	components: {},
+	created() {},
 	computed: {
 		...mapState([
-      'isFirstLogin',
-			'checkpointData',
-			'reportData',
-			'pipelineData',
-			'segmentData',
-			'multipleSelectedPoint',
-			'multipleSelectedLine',
-			'uploadPhotoData'
+			"isFirstLogin",
+			"checkpointData",
+			"reportData",
+			"pipelineData",
+			"segmentData",
+			"multipleSelectedPoint",
+			"multipleSelectedLine",
+			"uploadPhotoData"
 		])
 	},
 	async mounted() {
-		this.amapView()
-		await this.reloadAllData()
-		this.renderPoint()
-		this.renderLine()
+		this.amapView();
+		await this.reloadAllData();
+		this.renderPoint();
+		this.renderLine();
 	},
 	data() {
 		return {
@@ -122,33 +112,31 @@ export default {
 		};
 	},
 	methods: {
-    ...mapMutations([
-      'setIsFirstLogin'
-    ]),
+		...mapMutations(["setIsFirstLogin"]),
 		...mapActions([
-			'reloadAllData',
-			'getCheckpoint', 
-			'getReport',
-			'getPipeline',
-			'getmultipleSelectedPoint',
-			'getMultipleSelectedLine'
+			"reloadAllData",
+			"getCheckpoint",
+			"getReport",
+			"getPipeline",
+			"getmultipleSelectedPoint",
+			"getMultipleSelectedLine"
 		]),
-		renderPoint(){
-			let that = this
-			let points = []
+		renderPoint() {
+			let that = this;
+			let points = [];
 
-			let selectedPoints = that.multipleSelectedPoint
+			let selectedPoints = that.multipleSelectedPoint;
 
-			if(that.isFirstLogin){
-				selectedPoints = that.checkpointData
-      }
-			
-			_.each(selectedPoints, function(point, index){
+			if (that.isFirstLogin) {
+				selectedPoints = that.checkpointData;
+			}
+
+			_.each(selectedPoints, function(point, index) {
 				let icon = new AMap.Icon({
 					size: new AMap.Size(25, 25),
-					image: '/static/icons/' + point.type + '.png',
-					imageSize: new AMap.Size(25, 25),
-				})
+					image: "/static/icons/" + point.type + ".png",
+					imageSize: new AMap.Size(25, 25)
+				});
 
 				let marker = new AMap.Marker({
 					// anchor: 'bottom-center',
@@ -159,93 +147,93 @@ export default {
 					bubble: true,
 					topWhenClick: true,
 					extData: point
-				})
-				marker.on('click', function(e){
-					let p = e.target
-					that.pointForm = p.getExtData()
-					let photoNames = that.pointForm.photo ? that.pointForm.photo.split("；") : []
-					let baseUrl = "/image/"
-					that.photos = []
-					that.uploadPhotoData = that.uploadPhotoData || {}
-					
-					_.each(photoNames, function(name){
+				});
+				marker.on("click", function(e) {
+					let p = e.target;
+					that.pointForm = p.getExtData();
+					let photoNames = that.pointForm.photo
+						? that.pointForm.photo.split("；")
+						: [];
+					let baseUrl = "/image/";
+					that.photos = [];
+					that.uploadPhotoData = that.uploadPhotoData || {};
+
+					_.each(photoNames, function(name) {
 						let photoObj = {
 							name: name,
 							src: baseUrl + that.uploadPhotoData.reportNum + "/" + name
-						}
-						that.photos.push(photoObj)
-					})
+						};
+						that.photos.push(photoObj);
+					});
 
-					that.isPoint = true
-				})
-				points.push(marker)
-			})
-			let overlayGroups = new AMap.OverlayGroup(points)
-			this.map.add(overlayGroups)	 
+					that.isPoint = true;
+				});
+				points.push(marker);
+			});
+			let overlayGroups = new AMap.OverlayGroup(points);
+			this.map.add(overlayGroups);
 		},
-		renderLine(){
-			let that = this
-			let lines = []
-			
-			_.each(that.pipelineData, function(pipe, index){
-				let strokeWeight = 2
-				if(_.findIndex(that.multipleSelectedLine, pipe) > -1 ){
-					strokeWeight = 3
+		renderLine() {
+			let that = this;
+			let lines = [];
+
+			_.each(that.pipelineData, function(pipe, index) {
+				let strokeWeight = 2;
+				if (_.findIndex(that.multipleSelectedLine, pipe) > -1) {
+					strokeWeight = 3;
 				}
-				if(that.isFirstLogin){
-					strokeWeight = 3
+				if (that.isFirstLogin) {
+					strokeWeight = 3;
 				}
 				let pipeline = new AMap.Polyline({
 					path: pipe.pipePaths,
-					cursor: 'pointer',
+					cursor: "pointer",
 					strokeColor: pipe.strokeColor,
 					// isOutline: true,
 					// borderWeight: 1,
-					outlineColor: '#ffeeff',
+					outlineColor: "#ffeeff",
 					strokeOpacity: 1,
 					strokeWeight: strokeWeight,
 					// 折线样式还支持 'dashed'
-					strokeStyle: 'solid',
+					strokeStyle: "solid",
 					// strokeStyle是dashed时有效
 					// strokeDasharray: [6, 4],
 					// lineJoin: 'round',
 					// lineCap: 'round',
 					zIndex: 8,
 					extData: pipe
-				})
-				pipeline.on('click', function(e){
-					let p = e.target
-					that.lineForm = p.getExtData()
-					that.isPoint = false
-				})
-				lines.push(pipeline)
-			})
-			let overlayGroups = new AMap.OverlayGroup(lines)
-			this.map.add(overlayGroups)	 
+				});
+				pipeline.on("click", function(e) {
+					let p = e.target;
+					that.lineForm = p.getExtData();
+					that.isPoint = false;
+				});
+				lines.push(pipeline);
+			});
+			let overlayGroups = new AMap.OverlayGroup(lines);
+			this.map.add(overlayGroups);
 		},
 		amapView() {
-			let that = this
-			that.map = new AMap.Map('map-box', {
+			let that = this;
+			that.map = new AMap.Map("map-box", {
 				resizeEnable: true,
 				zoom: 11,
-				center: ['116.537812', '40.02218045'],
-				viewMode: '3D'
-			})
-			that.map.plugin(['AMap.ToolBar', 'AMap.MapType'], function(){
-				that.map.addControl(new AMap.ToolBar())
-			})
+				center: ["116.537812", "40.02218045"],
+				viewMode: "3D"
+			});
+			that.map.plugin(["AMap.ToolBar", "AMap.MapType"], function() {
+				that.map.addControl(new AMap.ToolBar());
+			});
 
-			that.map.clearMap()
+			that.map.clearMap();
 
-			that.map.setFitView()
+			that.map.setFitView();
 		},
 		goToDetail() {
 			this.$router.push({ path: "detail" });
 		},
 		onShare() {
-			this.$copyText(
-				`${window.location.href}`
-			).then(
+			this.$copyText(`${window.location.href}`).then(
 				res => {
 					this.$message({
 						message: "当前地址已成功复制，可直接去分享",
@@ -264,32 +252,64 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
-
+<style scoped>
 	.cs-title {
-		height: 60px;
-		line-height: 60px;
-		text-align: left;
-		span {
-			display: inline-block;
-			font-size: 28px;
-			text-align: center;
-		}
+		position: absolute;
+		left: 70px;
+		top: 20px;
+		background: #ffffff;
+		border-radius: 5px;
+		box-shadow: 1px 1px 8px #000;
 	}
-	.el-carousel__item h3 {
+	.cs-panel {
+		position: absolute;
+		right: 50px;
+		top: 20px;
+		width: 450px;
+		height: 550px;
+		background: #fefefe;
+		padding: 0;
+		margin: 0;
+		border-radius: 5px;
+		box-shadow: 1px 1px 8px #000;
+	}
+	.cs-panel-title {
+		font-size: 20px;
+		font-weight: bold;
+		height: 50px;
+		line-height: 50px;
+	}
+	.cs-panel-btn {
+		height: 40px;
+		line-height: 40px;
+	}
+	.cs-info-h3 {
+		margin: 10px 0;
+	}
+
+	.cs-home-box >>> .el-carousel__container {
+		height: 200px;
+	}
+
+	.cs-home-box >>> .el-form-item__label {
+		font-weight: bold;
+	}
+
+	.cs-home-box >>> .el-form-item--mini.el-form-item, 
+	.cs-home-box >>> .el-form-item--small.el-form-item {
+		margin-bottom: 2px;
+	}
+
+	.cs-home-box >>> .el-carousel__item h3 {
 		color: #475669;
 		font-size: 18px;
 		opacity: 0.75;
-		line-height: 300px;
 		margin: 0;
 	}
-
-	.el-carousel__item:nth-child(2n) {
+	.cs-home-box >>> .el-carousel__item:nth-child(2n) {
 		background-color: #99a9bf;
 	}
-
-	.el-carousel__item:nth-child(2n + 1) {
+	.cs-home-box >>> .el-carousel__item:nth-child(2n + 1) {
 		background-color: #d3dce6;
 	}
-
 </style>
