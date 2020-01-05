@@ -110,7 +110,7 @@
               <el-table-column
                 prop="pipeNum"
                 label="管线编号"
-                width="180"
+                width="160"
                 show-overflow-tooltip>
               </el-table-column>
               <el-table-column
