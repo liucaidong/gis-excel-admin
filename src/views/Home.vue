@@ -323,7 +323,7 @@ export default {
     width: 50px;
     height: 50px;
     left: -25px;
-    top: 45%;
+    top: 42%;
     border-radius: 50%;
     box-shadow: 1px 1px 8px #000;
 		z-index: 0;
@@ -334,7 +334,7 @@ export default {
     width: 50px;
     height: 80px;
     left: 0px;
-    top: 42%;
+    top: 40%;
     z-index: 1;
 	}
 	.cs-title {
