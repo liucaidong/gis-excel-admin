@@ -44,7 +44,7 @@
 				</el-form>
 				<el-carousel :interval="5000" arrow="always">
 					<el-carousel-item v-for="item in photos" :key="item.name">
-						<img :src="item.src" width="100%" />
+						<img :src="item.src" height="100%" />
 					</el-carousel-item>
 				</el-carousel>
 			</div>
