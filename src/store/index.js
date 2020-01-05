@@ -80,7 +80,7 @@ export default new Vuex.Store({
             await axios.get("/excel/report", {}).then((res) => {
                 var data = res.data
                 commit('setreportData', data)
-                commit('setuploadPhotoData', !data[0] ? "" : ["reportNum"])
+                commit('setuploadPhotoData', !data[0] ? "" : data[0]["reportNum"])
             })
         },
         async getPipeline({ dispatch, commit, state }) {
