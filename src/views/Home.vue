@@ -85,6 +85,8 @@ import AMap from "AMap";
 import _ from "lodash";
 import { mapState, mapMutations, mapActions } from "vuex";
 
+import backendUrl from '../config'
+
 export default {
 	name: "Home",
 	components: {},
@@ -166,7 +168,7 @@ export default {
 					let photoNames = that.pointForm.photo
 						? that.pointForm.photo.split("；")
 						: [];
-					let baseUrl = "/image/";
+					let baseUrl = backendUrl + "/image/";
 					that.photos = [];
 					that.uploadPhotoData = that.uploadPhotoData || {};
 
