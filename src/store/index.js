@@ -18,6 +18,7 @@ export default new Vuex.Store({
         reportData: [],
         pipelineData: [],
         segmentData: [],
+        orphanSegmentData: [],
         multipleSelectedPoint: [],
         multipleSelectedLine: [],
         uploadPhotoData: {
@@ -49,6 +50,9 @@ export default new Vuex.Store({
         },
         setsegmentData(state, payload) {
             state.segmentData = payload
+        },
+        setorphanSegmentData(state, payload) {
+            state.orphanSegmentData = payload
         },
         setmultipleSelectedPoint(state, payload) {
             state.multipleSelectedPoint = payload
@@ -84,18 +88,34 @@ export default new Vuex.Store({
                 var data = res.data
                 await dispatch('getSegment')
 
+                let orphanSegmentArr = _.cloneDeep(state.segmentData)
+
                 _.each(data, function(pipeline) {
                     let pipePaths = []
                     _.each(state.segmentData, function(segment) {
                         if (segment.pipeNum == pipeline.pipeNum) {
                             pipePaths.push(new AMap.LngLat(segment.startL, segment.startB))
                             pipePaths.push(new AMap.LngLat(segment.endL, segment.endB))
+                            _.remove(orphanSegmentArr, function(orphanSeg) {
+                                return orphanSeg.id == segment.id
+                            })
                         }
                     })
                     pipeline.pipePaths = pipePaths
                     pipeline.strokeColor = state.pipelineColor[pipeline.pressLevel]
                 })
 
+                if(_.isArray(orphanSegmentArr) && orphanSegmentArr.length > 0){
+                    _.each(orphanSegmentArr, function(orphanSegment) {
+                        let pipePaths = []
+                        pipePaths.push(new AMap.LngLat(orphanSegment.startL, orphanSegment.startB))
+                        pipePaths.push(new AMap.LngLat(orphanSegment.endL, orphanSegment.endB))
+                        orphanSegment.pipePaths = pipePaths
+                        orphanSegment.strokeColor = state.pipelineColor[orphanSegment.pressLevel]
+                    })
+                }
+
+                commit('setorphanSegmentData', orphanSegmentArr)
                 commit('setpipelineData', data)
             })
         },

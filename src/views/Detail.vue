@@ -1,8 +1,8 @@
 <template>
-  <div style="width: 100%; height: 100%;">
+  <div style="width: 100%; height: 95%;">
     <el-row style="height: 60px; line-height: 60px;">
-      <el-col :span="8" style=" color: #888888; text-align: left; font-family:隶书; font-size: 28px; font-weight: bold;">
-        燃气管道数据展示分析
+      <el-col :span="8" style="height: 60px">
+        <img height="100%" src="/static/images/banner.png" />
       </el-col>
       <el-col :span="16">
         <el-button size="medium" type="primary" plain @click="dialogTableVisible = true">上传数据表</el-button>
@@ -16,7 +16,7 @@
           <el-tab-pane label="检测点" name="first">
             <el-table
               ref="checkpointTable"
-              max-height="600"
+              max-height="440"
               :data="checkpointData"
               tooltip-effect="dark"
               style="width: 100%"
@@ -27,70 +27,70 @@
               </el-table-column>
               <el-table-column
                 prop="checkPointNum"
-                label="检测点编号"                
-                width="120"
+                label="检测点编号" 
+                fit
                 show-overflow-tooltip>
               </el-table-column>
               <el-table-column
                 prop="checkPointName"
                 label="检测点名称"                
-                width="120"
+                fit
                 show-overflow-tooltip>
               </el-table-column>
               <el-table-column
                 prop="type"
                 label="类型"
-                width="120"
+                width="100"
                 show-overflow-tooltip>
               </el-table-column>
               <el-table-column
                 prop="photo"
                 label="照片"
-                width="120"
+                fit
                 show-overflow-tooltip>
               </el-table-column>
               <el-table-column
                 prop="remark"
                 label="备注"                
-                width="120"
+                fit
                 show-overflow-tooltip>
               </el-table-column>
               <el-table-column
                 prop="lon"
                 label="经度L"
-                width="120"
+                width="150"
                 show-overflow-tooltip>
               </el-table-column>
               <el-table-column
                 prop="lat"
                 label="纬度B"
-                width="120"
+                width="150"
                 show-overflow-tooltip>
               </el-table-column>
             </el-table>
           </el-tab-pane>
           <el-tab-pane label="检测报告" name="second">
             <el-table
-              max-height="600"
+              max-height="440"
               :data="reportData"
               tooltip-effect="dark"
               style="width: 100%">
               <el-table-column
                 prop="reportNum"
                 label="报告编号"
-                width="120"
+                fit
                 show-overflow-tooltip>
               </el-table-column>
               <el-table-column
                 prop="pipeName"
                 label="管道名称"
-                width="120"
+                fit
                 show-overflow-tooltip>
               </el-table-column>
               <el-table-column
                 prop="pipeNum"
                 label="管线编号"
-                width="120"
+                fit
                 show-overflow-tooltip>
               </el-table-column>
             </el-table>
@@ -98,7 +98,7 @@
           <el-tab-pane label="管线信息" name="third">
             <el-table
               ref="pipelineTable"
-              max-height="600"
+              max-height="440"
               :data="pipelineData"
               tooltip-effect="dark"
               style="width: 100%"
@@ -110,19 +110,19 @@
               <el-table-column
                 prop="pipeNum"
                 label="管线编号"
-                width="120"
+                fit
                 show-overflow-tooltip>
               </el-table-column>
               <el-table-column
                 prop="projectName"
                 label="测量工程名称"
-                width="120"
+                fit
                 show-overflow-tooltip>
               </el-table-column>
               <el-table-column
                 prop="medium"
                 label="运行介质"
-                width="120"
+                width="140"
                 show-overflow-tooltip>
               </el-table-column>
               <el-table-column
@@ -146,57 +146,63 @@
               <el-table-column
                 prop="length"
                 label="长度(m)"
-                width="120"
+                width="140"
                 show-overflow-tooltip>
               </el-table-column>
             </el-table>
           </el-tab-pane>
           <el-tab-pane label="管段信息" name="fourth">
             <el-table
-              max-height="600"
+              max-height="440"
               :data="segmentData"
               tooltip-effect="dark"
               style="width: 100%">
               <el-table-column
                 prop="segmentNum"
                 label="管段编号"
-                width="120"
+                fit
                 show-overflow-tooltip>
               </el-table-column>
               <el-table-column
                 prop="startL"
                 label="起点经度L"
-                width="120"
+                width="160"
                 show-overflow-tooltip>
               </el-table-column>
               <el-table-column
                 prop="startB"
                 label="起点纬度B"
-                width="120"
+                width="160"
                 show-overflow-tooltip>
               </el-table-column>
               <el-table-column
                 prop="endL"
-                label终点经度L姓名"
-                width="120"
+                label="终点经度L"
+                width="160"
                 show-overflow-tooltip>
               </el-table-column>
               <el-table-column
                 prop="endB"
-                label终点纬度B姓名"
-                width="120"
+                label="终点纬度B"
+                width="160"
                 show-overflow-tooltip>
               </el-table-column>
               <el-table-column
                 prop="pipeNum"
                 label="管线编号"
-                width="120"
+                fit
+                show-overflow-tooltip>
+              </el-table-column>
+              <el-table-column
+                prop="pressLevel"
+                label="压力级制"
+                width="140"
                 show-overflow-tooltip>
               </el-table-column>
               <el-table-column
                 prop="length"
                 label="平面长度(m)"
-                width="120"
+                width="160"
                 show-overflow-tooltip>
               </el-table-column>
             </el-table>
