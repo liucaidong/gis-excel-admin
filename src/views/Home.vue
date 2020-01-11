@@ -107,8 +107,14 @@ export default {
 	async mounted() {
 		this.amapView();
 		await this.reloadAllData();
-		this.renderPoint();
-		this.renderLine();
+	},
+	watch: {
+		checkpointData: function(val){
+			this.renderPoint();
+		},
+		pipelineData: function(val){
+			this.renderLine();
+		}
 	},
 	data() {
 		return {
@@ -126,11 +132,6 @@ export default {
 		...mapMutations(["setIsFirstLogin"]),
 		...mapActions([
 			"reloadAllData",
-			"getCheckpoint",
-			"getReport",
-			"getPipeline",
-			"getmultipleSelectedPoint",
-			"getMultipleSelectedLine"
 		]),
 		onToggleDetailPanel(){
 			this.csDetailPanel.right === '-500px' ? this.csDetailPanel.right = '50px' : this.csDetailPanel.right = '-500px'
@@ -170,7 +171,6 @@ export default {
 						: [];
 					let baseUrl = backendUrl + "/image/";
 					that.photos = [];
-					that.uploadPhotoData = that.uploadPhotoData || {};
 
 					_.each(photoNames, function(name) {
 						let photoObj = {
