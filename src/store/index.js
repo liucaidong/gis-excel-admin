@@ -75,6 +75,9 @@ export default new Vuex.Store({
                 let data = res.data
                 let len = data.length
                 let convertNum = 0
+                if (len == 0) {
+                    commit('setcheckpointData', [])
+                }
                 _.each(data, function(item){
                     AMap.convertFrom([parseFloat(item.lon), parseFloat(item.lat)], 'gps', function (status, result) {
                         if (result.info === 'ok') {
@@ -100,6 +103,9 @@ export default new Vuex.Store({
         async getPipeline({ dispatch, commit, state }) {
             await axios.get("/excel/pipeline", {}).then(async(res) => {
                 var data = res.data
+                if (data.length == 0){
+                    commit('setpipelineData', [])
+                }
                 await dispatch('getSegment', data)
             })
         },
@@ -108,6 +114,9 @@ export default new Vuex.Store({
                 var data = res.data
                 let len = data.length
                 let convertNum = 0
+                if (len == 0) {
+                    commit('setsegmentData', [])
+                }
                 _.each(data, function(item){
                     AMap.convertFrom([
                         [parseFloat(item.startL), parseFloat(item.startB)],
@@ -121,6 +130,7 @@ export default new Vuex.Store({
                             item.endL = lnglats[1].lng
                             item.endB = lnglats[1].lat
                             if(convertNum == len){
+                                data = _.sortBy(data, function(item) { return item.segmentNum; });
                                 commit('setsegmentData', data)
 
                                 let orphanSegmentArr = _.cloneDeep(state.segmentData)
